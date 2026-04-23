@@ -112,3 +112,6 @@ ENV/
 
 # IDE settings
 .vscode/
+
+# VCS workspace
+ethopy_package.code-workspace
