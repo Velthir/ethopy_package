@@ -29,7 +29,7 @@ class Experiment:
 
     def __init__(self):
         # self.interface = None
-        self.params = None
+        self.session_params = None
         self.logger = None
         self.sync = False
         self.cal_idx = 0
@@ -49,19 +49,19 @@ class Experiment:
 
         _extended_summary_
         """
-        self.params = params
+        self.session_params = params
         self.logger = logger
 
         interface_module = self.logger.get(
             schema="interface",
             table="SetupConfiguration",
             fields=["interface"],
-            key={"setup_conf_idx": self.params["setup_conf_idx"]},
+            key={"setup_conf_idx": self.session_params["setup_conf_idx"]},
         )[0]
         interface = getattr(
             import_module(f"ethopy.interfaces.{interface_module}"), interface_module
         )
-        self.setup_conf_idx = self.params["setup_conf_idx"]
+        self.setup_conf_idx = self.session_params["setup_conf_idx"]
 
         self.interface = interface(exp=self, callbacks=False)
 
@@ -183,7 +183,7 @@ class Experiment:
         """Before start pulses show a label in screen to place a pad under the ports"""
         self.pressure = self.curr
         self.curr = ""
-        if self.cal_idx < len(self.params["pulsenum"]):
+        if self.cal_idx < len(self.session_params["pulsenum"]):
             self.menu.clear()
             self.menu.add.label(
                 "Place zero-weighted pad under the port", float=True, font_size=30
@@ -205,7 +205,7 @@ class Experiment:
         Display the pulses
         """
         self.pulse = 0
-        msg = f"Pulse {self.pulse + 1}/{self.params['pulsenum'][self.cal_idx]}"
+        msg = f"Pulse {self.pulse + 1}/{self.session_params['pulsenum'][self.cal_idx]}"
         self.menu.clear()
         pulses_label = self.menu.add.label(
             msg,
@@ -224,14 +224,14 @@ class Experiment:
             widget (_type_): The widget that uses the function
             menu (_type_): The current menu
         """
-        if self.pulse < self.params["pulsenum"][self.cal_idx]:
-            self.msg = f"Pulse {self.pulse + 1}/{self.params['pulsenum'][self.cal_idx]}"
+        if self.pulse < self.session_params["pulsenum"][self.cal_idx]:
+            self.msg = f"Pulse {self.pulse + 1}/{self.session_params['pulsenum'][self.cal_idx]}"
             log.info(f"\r{self.msg}")
             widget.set_title(self.msg)
-            for port in self.params["ports"]:
+            for port in self.session_params["ports"]:
                 try:
                     self.interface.give_liquid(
-                        port, self.params["duration"][self.cal_idx]
+                        port, self.session_params["duration"][self.cal_idx]
                     )
                     pass
                 except Exception as error:
@@ -240,27 +240,27 @@ class Experiment:
                     self.exit()
 
                 time.sleep(
-                    self.params["duration"][self.cal_idx] / 1000
-                    + self.params["pulse_interval"][self.cal_idx] / 1000
+                    self.session_params["duration"][self.cal_idx] / 1000
+                    + self.session_params["pulse_interval"][self.cal_idx] / 1000
                 )
             self.pulse += 1  # update trial
         else:
             self.cal_idx += 1
-            self.ports = self.params["ports"].copy()
+            self.ports = self.session_params["ports"].copy()
             self.create_port_weight()
 
     def create_port_weight(self):
         """A menu with numpad for defining the water in every port"""
         self.menu.clear()
         cal_idx = self.cal_idx - 1
-        if self.params["save"]:
+        if self.session_params["save"]:
             self.menu.clear()
             if len(self.ports) != 0:
-                if len(self.ports) != len(self.params["ports"]):
+                if len(self.ports) != len(self.session_params["ports"]):
                     self.log_pulse_weight(
-                        self.params["duration"][cal_idx],
+                        self.session_params["duration"][cal_idx],
                         self.port,
-                        self.params["pulsenum"][cal_idx],
+                        self.session_params["pulsenum"][cal_idx],
                         self.curr,
                         self.pressure,
                     )
@@ -271,9 +271,9 @@ class Experiment:
                 )
             else:
                 self.log_pulse_weight(
-                    self.params["duration"][cal_idx],
+                    self.session_params["duration"][cal_idx],
                     self.port,
-                    self.params["pulsenum"][cal_idx],
+                    self.session_params["pulsenum"][cal_idx],
                     self.curr,
                     self.pressure,
                 )
