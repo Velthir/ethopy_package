@@ -6,7 +6,7 @@ This guide will walk you through the process of setting up and running your firs
 
 Before starting, ensure you have:
 
-- Python 3.8 or higher (but less than 3.12) installed
+- Python 3.9 or higher (but less than 3.12) installed
 - MariaDB database
 !!! tip  Database setup
     We recommend using [Docker](https://www.docker.com/blog/getting-started-with-docker-desktop/) for setting up a new database.
@@ -112,7 +112,7 @@ EthoPy relies on a MariaDB database for experiment configuration and data loggin
 
 === "Windows"
     `%USERPROFILE%\.ethopy\local_conf.json`
-   dj_local_conf includes the parameters relevant to the [datajoint configuration](https://datajoint.com/docs/elements/element-miniscope/0.2/tutorials/01-Configure/), more details about the local_conf.json can be found [here](local_conf.md):
+   dj_local_conf includes the parameters relevant to the [datajoint configuration](https://docs.datajoint.com/how-to/configure-database/), more details about the local_conf.json can be found [here](local_conf.md):
    ```json
    {
        "dj_local_conf": {
